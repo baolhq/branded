@@ -50,6 +50,7 @@ type Weapon struct {
 	Price        int
 	MinRange     int
 	MaxRange     int
+	Weight       int  // More weight needs more constitution to avoid penalties
 	IsTwoHanded  bool // Wheather this weapon MUST be wielded two-hand
 	CanTwoHanded bool // Wheather this weapon CAN be wielded two-hand
 	HitBonus     int  // e.g: +1d4 chance to hit

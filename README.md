@@ -1,9 +1,11 @@
 # Branded
 
-A Fire Emblem-inspired tactical RPG with D&D-style combat.
+A turn-based strategy game inspired by classic Fire Emblem titles and D&D-style combat.
+
 _Built with passion, caffeine, and just a little bit of frustration._
 
 ### What is This?
+
 Ever wanted to play Fire Emblem but with dice rolls? Welcome to Branded! Here, your attacks aren't just predetermined numbers—they're at the mercy of the RNG gods. Every swing of your sword, every dodge, every spell... it all depends on a roll of the dice.
 
 **Features**:
@@ -22,27 +24,6 @@ First thing first, take a quick look at the [basic control](doc/CONTROL.md).
 
 Then you can read more about general gameplay in [the Handbook](doc/HANDBOOK.md).
 
-### Building from Source
-
-1. Clone the repo:
-
-```sh
-git clone https://github.com/baolhq/branded.git  
-cd branded  
-```
-
-2. Build (assuming you have Go installed):
-
-```sh
-go build -o branded
-```
-
-3. Run the game:
-
-```sh
-./branded
-```
-
 ### Project Structure
 
 ```sh
@@ -51,32 +32,24 @@ go build -o branded
 ├── go.mod                  # Go module file
 ├── go.sum                  # Dependencies lock file
 ├── /lib                    # Game source code
-│   ├── ai/                 # Monster logic, pathfinding, etc.
+│   ├── bot/                # Enemy logics, pathfinding, etc.
 │   ├── core/               # Core game logic (map, entities, combat, etc.)
 │   ├── data/               # Loading game data (items, monsters, etc.)
-│   ├── env/                # World generation, procedural content
+│   ├── env/                # Environment variables
+│   ├── gen/                # World generation, procedural content
 │   ├── meta/               # Metadata, constants, etc.
 │   ├── ui/                 # Rendering, input handling, TUI
-│   ├── util/               # Helper functions
-│   └── world/              # Environment variables
-├── /dist                   # Build output
-├── /doc                    # Documentation
-│   ├── CHANGELOG.md        # Rendering, input handling, TUI
-│   ├── TRANSLATION.md      # Translation guide
-│   ├── CONTROL.md          # Game control guide
-│   ├── HANDBOOK.md         # The player handbook
-│   └── STORY.md            # Game story
-├── /lang                   # Translations
-├── /res                    # Game resources
+│   └── util/               # Helper functions
+├── /res                    # Static resources
 │   ├── audio/              # Sound effects
 │   ├── font/               # Recommended fonts
 │   ├── img/                # Images and banners
+├── /dist                   # Build output
+├── /doc                    # Documentations, handbooks, etc.
+├── /lang                   # Translations
 ├── /script                 # Build/automation scripts
-│   ├── build-windows.ps1   # Automated build script for Windows
-│   ├── build-linux.sh      # Automated build script for Linux
 ├── /test                   # Unit and integration tests
 │   ├── game_test.go        # Test for core game logic
-│   ├── ui_test.go          # Test for UI handling
 │   └── ...                 # More test files
 ```
 
@@ -90,7 +63,7 @@ Wanna help? Great! Fork the repo, make your changes, and send a pull request.
 
 Just don’t break the game more than it already is.
 
-For more information and tips, please read the [CONTRIBUTING](CONTRIBUTING.md).
+For more information and tips, please follow the [Code of Conduct](CODE_OF_CONDUCT.md) as well as the [Contributing guide](doc/CONTRIBUTING.md).
 
 ### Acknowledgments
 

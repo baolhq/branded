@@ -17,7 +17,9 @@ const (
 
 type Object struct {
 	Id          int
+	Desc        string
 	Walkable    bool
 	Destroyable bool
-	IsBuilding  bool
+	IsBuilding  bool // Can be `Visit`
+	IsLocked    bool // Can be `Unlock`
 }

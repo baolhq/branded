@@ -1,4 +1,4 @@
-package world
+package gen
 
 import (
 	"strings"
@@ -15,12 +15,15 @@ type Chapter struct {
 	Units []data.Unit
 }
 
+// A tile represent a character, terrain or objects
+// Characters will have their faction, others don't
 type Tile struct {
 	Terrain data.Terrain
 	Object  data.Object
 	Faction data.Faction
 }
 
+// If multiple objects is on the same place, store their stack
 type TileStack struct {
 	Tiles []Tile
 }
@@ -46,6 +49,7 @@ func setFactionStyle(style lipgloss.Style, faction int) lipgloss.Style {
 	return style
 }
 
+// Load default map with only plains terrain
 func LoadMap() [meta.MapWidth][meta.MapHeight]TileStack {
 	var m [meta.MapWidth][meta.MapHeight]TileStack
 	for x := range m {
@@ -56,6 +60,7 @@ func LoadMap() [meta.MapWidth][meta.MapHeight]TileStack {
 	return m
 }
 
+// Get the top-most object to render
 func (c *Chapter) TopTile(x, y int) Tile {
 	stack := c.Map[x][y].Tiles
 	if len(stack) > 0 {
@@ -64,6 +69,7 @@ func (c *Chapter) TopTile(x, y int) Tile {
 	return Tile{Terrain: data.Terrain{Id: data.Plain}}
 }
 
+// Adding object and/or terrain into a stack
 func (c *Chapter) AddObject(x, y int, terrain *data.Terrain, object *data.Object) {
 	if x >= 0 && x < meta.MapWidth && y >= 0 && y < meta.MapHeight {
 		// Ensure there's at least a default terrain tile
@@ -83,11 +89,12 @@ func (c *Chapter) AddObject(x, y int, terrain *data.Terrain, object *data.Object
 	}
 }
 
+// Adding an unit into a stack, store their location as well
 func (c *Chapter) AddUnit(unit data.Unit) {
-	if unit.PositionX >= 0 && unit.PositionX < meta.MapWidth &&
-		unit.PositionY >= 0 && unit.PositionY < meta.MapHeight {
-		if len(c.Map[unit.PositionX][unit.PositionY].Tiles) == 0 {
-			c.AddObject(unit.PositionX, unit.PositionY, &data.Terrain{Id: data.Plain}, nil)
+	if unit.PosX >= 0 && unit.PosX < meta.MapWidth &&
+		unit.PosY >= 0 && unit.PosY < meta.MapHeight {
+		if len(c.Map[unit.PosX][unit.PosY].Tiles) == 0 {
+			c.AddObject(unit.PosX, unit.PosY, &data.Terrain{Id: data.Plain}, nil)
 		}
 		c.Units = append(c.Units, unit)
 	}
@@ -105,19 +112,19 @@ func GetChapter(cursorX, cursorY int) string {
 	c.AddObject(12, 14, nil, &data.Object{Id: data.Door})
 
 	fighter := data.Unit{
-		Role:      data.FighterRole(),
-		Level:     5,
-		Faction:   data.Party,
-		PositionX: 10,
-		PositionY: 5,
+		Role:    data.FighterRole(),
+		Level:   5,
+		Faction: data.Party,
+		PosX:    10,
+		PosY:    5,
 	}
 
 	knight := data.Unit{
-		Role:      data.KnightRole(),
-		Level:     12,
-		Faction:   data.Enemy,
-		PositionX: 20,
-		PositionY: 8,
+		Role:    data.KnightRole(),
+		Level:   12,
+		Faction: data.Enemy,
+		PosX:    20,
+		PosY:    8,
 	}
 
 	c.AddUnit(fighter)
@@ -129,7 +136,7 @@ func GetChapter(cursorX, cursorY int) string {
 			unitFound := false
 
 			for _, unit := range c.Units {
-				if unit.PositionX == x && unit.PositionY == y {
+				if unit.PosX == x && unit.PosY == y {
 					unitFound = true
 					roleId := unit.Role.Id
 

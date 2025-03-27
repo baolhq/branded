@@ -1,9 +1,9 @@
 package core
 
 import (
+	"baolhq/branded/lib/gen"
 	"baolhq/branded/lib/meta"
 	"baolhq/branded/lib/ui"
-	"baolhq/branded/lib/world"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -25,7 +25,7 @@ type State struct {
 
 func InitState() State {
 	cX, cY := 12, 7 // Initial cursor position
-	chapter := world.GetChapter(cX, cY)
+	chapter := gen.GetChapter(cX, cY)
 
 	return State{
 		Content:  string(chapter),
@@ -51,7 +51,7 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			"h", "j", "k", "l", "y", "u", "b", "n",
 			"1", "2", "3", "4", "6", "7", "8", "9":
 			m.Controls.MoveCursor(msg.String(), m.ContentViewport.Width, m.ContentViewport.Height)
-			newMapContent := world.GetChapter(m.Controls.CursorX, m.Controls.CursorY)
+			newMapContent := gen.GetChapter(m.Controls.CursorX, m.Controls.CursorY)
 			m.ContentViewport.SetContent(newMapContent)
 
 		// Scroll messages

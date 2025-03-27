@@ -12,6 +12,7 @@ const (
 
 type Terrain struct {
 	Id           int
+	Desc         string
 	MovementCost int
 	Walkable     bool
 	Diggable     bool

@@ -21,14 +21,15 @@ const (
 
 // Unit represent a single unit in game
 type Unit struct {
-	Name     string
-	Level    int
-	Exp      int
-	Gender   Gender
-	Role     Role
-	Faction  int    // Default faction of this unit
-	RecuitBy []Unit // <Talk> to recuit this hostile unit
-	Support  []Unit // <Support> to increase relationship
+	Name         string
+	Level        int
+	Exp          int
+	Gender       Gender
+	Role         Role
+	Faction      int    // Initial faction of this unit toward the player's party
+	RecuitBy     []Unit // <Talk> to recuit this hostile unit
+	Support      []Unit // <Support> to increase relationship
+	SupportLevel []int  // Correspond to the <Support> array
 
 	// Base attribute bonuses
 	STR, DEX, CON int
@@ -38,6 +39,5 @@ type Unit struct {
 	USTR, UDEX, UCON int
 	UINT, UWIS, UCHA int
 
-	// Unit position on the map
-	PositionX, PositionY int
+	PosX, PosY int // Unit position on the map
 }
