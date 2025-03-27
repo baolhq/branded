@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Update Go modules
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    assignees:
+      - "baolhq"
+    labels:
+      - "dependencies"
+      - "go"
+    reviewers:
+      - "baolhq"
+
+  # Update GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    assignees:
+      - "baolhq"
+    labels:
+      - "dependencies"
+      - "ci"
+    reviewers:
+      - "baolhq"

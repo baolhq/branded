@@ -1,0 +1,10 @@
+# Build directories
+dist/
+
+# Environment variables
+**/**.env
+
+# IDEs and editors preferences
+.vscode/
+.idea/
+.vs/
