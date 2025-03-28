@@ -22,6 +22,7 @@ const (
 // Unit represent a single unit in game
 type Unit struct {
 	Name         string
+	Symbol       string
 	Level        int
 	Exp          int
 	Gender       Gender

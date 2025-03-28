@@ -18,6 +18,7 @@ const (
 type Object struct {
 	Id          int
 	Desc        string
+	Symbol      string
 	Walkable    bool
 	Destroyable bool
 	IsBuilding  bool // Can be `Visit`

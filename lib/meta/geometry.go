@@ -7,5 +7,7 @@ const (
 	MapWidth     = TermWidth/2 + 4
 	MapHeight    = TermHeight - StatusHeight - 2
 	MsgWidth     = TermWidth/2 - 8
-	MsgHeight    = MapHeight
+	MsgHeight    = MapHeight/2 - 2
+	RsoWidth     = MsgWidth
+	RsoHeight    = MapHeight/2 + 2
 )

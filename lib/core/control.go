@@ -1,12 +1,14 @@
 package core
 
-import "github.com/charmbracelet/bubbles/viewport"
+import (
+	"github.com/charmbracelet/bubbles/viewport"
+)
 
 type Controls struct {
 	CursorX, CursorY int
 }
 
-// MoveCursor handles movement logic
+// Handles cursor movement logic
 func (c *Controls) MoveCursor(direction string, width, height int) {
 	switch direction {
 	case "left", "h", "4":

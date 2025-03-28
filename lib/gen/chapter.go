@@ -54,7 +54,7 @@ func LoadMap() [meta.MapWidth][meta.MapHeight]TileStack {
 	var m [meta.MapWidth][meta.MapHeight]TileStack
 	for x := range m {
 		for y := range m[x] {
-			m[x][y] = TileStack{Tiles: []Tile{{Terrain: data.Terrain{Id: data.Plain}}}}
+			m[x][y] = TileStack{Tiles: []Tile{{Terrain: data.Terrain{Id: data.Plain, Symbol: "."}}}}
 		}
 	}
 	return m
@@ -105,14 +105,15 @@ func GetChapter(cursorX, cursorY int) string {
 	sb.Grow(meta.MapWidth * meta.MapHeight * 2)
 	c := Chapter{Map: LoadMap()}
 
-	c.AddObject(10, 5, &data.Terrain{Id: data.Lava}, nil)
-	c.AddObject(20, 8, &data.Terrain{Id: data.Lava}, nil)
+	c.AddObject(10, 5, &data.Terrain{Id: data.Lava, Symbol: "{"}, nil)
+	c.AddObject(20, 8, &data.Terrain{Id: data.Lava, Symbol: "{"}, nil)
 
-	c.AddObject(12, 13, nil, &data.Object{Id: data.Wall})
-	c.AddObject(12, 14, nil, &data.Object{Id: data.Door})
+	c.AddObject(12, 13, nil, &data.Object{Id: data.Wall, Symbol: "#"})
+	c.AddObject(12, 14, nil, &data.Object{Id: data.Door, Symbol: "+"})
 
 	fighter := data.Unit{
 		Role:    data.FighterRole(),
+		Symbol:  "f",
 		Level:   5,
 		Faction: data.Party,
 		PosX:    10,
@@ -121,6 +122,7 @@ func GetChapter(cursorX, cursorY int) string {
 
 	knight := data.Unit{
 		Role:    data.KnightRole(),
+		Symbol:  "f",
 		Level:   12,
 		Faction: data.Enemy,
 		PosX:    20,
@@ -132,68 +134,31 @@ func GetChapter(cursorX, cursorY int) string {
 
 	for y := 0; y < meta.MapHeight; y++ {
 		for x := 0; x < meta.MapWidth; x++ {
-			var char string
 			unitFound := false
 
 			for _, unit := range c.Units {
 				if unit.PosX == x && unit.PosY == y {
 					unitFound = true
-					roleId := unit.Role.Id
-
-					// Render role character, the roleId order is important
-					switch {
-					case roleId <= data.General:
-						char = "f"
-					case roleId <= data.SeraphKnight:
-						char = "c"
-					case roleId <= data.Spellblade:
-						char = "m"
-					case roleId <= data.Juggernaut:
-						char = "b"
-					case roleId <= data.Artillerist:
-						char = "a"
-					case roleId <= data.Sharpshooter:
-						char = "r"
-					case roleId <= data.Cryomancer:
-						char = "g"
-					case roleId <= data.Necromancer:
-						char = "d"
-					case roleId <= data.Inquisitor:
-						char = "e"
-					case roleId <= data.GreatLord:
-						char = "l"
-					default:
-						char = "?"
-					}
-
 					style := setFactionStyle(lipgloss.NewStyle(), unit.Faction)
+
 					if x == cursorX && y == cursorY {
 						style = style.Background(cursorStyle.GetBackground())
 					}
-					sb.WriteString(style.Render(char))
+
+					sb.WriteString(style.Render(unit.Symbol))
 					break
 				}
 			}
 
 			if !unitFound {
+				var char string
 				style := styles[0] // Default to white
 				tile := c.TopTile(x, y)
 
 				if tile.Object.Id > 0 {
-					switch tile.Object.Id {
-					case data.Wall:
-						char = "#"
-					case data.Door:
-						char = "+"
-					}
+					char = tile.Object.Symbol
 				} else {
-					switch tile.Terrain.Id {
-					case data.Plain:
-						char = "."
-					case data.Lava:
-						char = "{"
-					}
-					style = styles[tile.Terrain.Id]
+					char = tile.Terrain.Symbol
 				}
 
 				if x == cursorX && y == cursorY {

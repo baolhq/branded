@@ -2,6 +2,7 @@ package ui
 
 import (
 	"baolhq/branded/lib/meta"
+	"fmt"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	"github.com/charmbracelet/lipgloss"
@@ -22,9 +23,10 @@ func InitMessage(width int) viewport.Model {
 
 // renderMessage returns the formatted header content
 func renderMessage() string {
-	msg := oldMessageStyle.Render("This is an old message")
+	msg := oldMessageStyle.Render("This is the first message!")
 	temp := msg
-	for i := 1; i < 20; i++ {
+	for i := range 20 {
+		msg = oldMessageStyle.Render(fmt.Sprintf("This is an old message %d", i))
 		temp = lipgloss.JoinVertical(lipgloss.Top, temp, msg)
 	}
 

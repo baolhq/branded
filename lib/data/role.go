@@ -3,7 +3,6 @@ package data
 // WeaponMastery represents weapon proficiency
 type WeaponMastery int
 
-// Character role IDs, the order is important
 const (
 	// Fighter line (f)
 	Fighter int = iota

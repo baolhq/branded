@@ -11,8 +11,12 @@ import (
 )
 
 var (
-	mapStyle     = lipgloss.NewStyle().Width(meta.MapWidth).Height(meta.MapHeight).Border(lipgloss.RoundedBorder())
-	messageStyle = lipgloss.NewStyle().Width(meta.MsgWidth).Height(meta.MsgHeight).Border(lipgloss.RoundedBorder())
+	mapStyle = lipgloss.NewStyle().Width(meta.MapWidth).
+			Height(meta.MapHeight).Border(lipgloss.RoundedBorder())
+	messageStyle = lipgloss.NewStyle().Width(meta.MsgWidth).
+			Height(meta.MsgHeight).Border(lipgloss.RoundedBorder())
+	rsoStyle = lipgloss.NewStyle().Width(meta.RsoWidth).
+			Height(meta.RsoHeight).Border(lipgloss.HiddenBorder(), true, false, false, false)
 )
 
 type State struct {
@@ -20,6 +24,7 @@ type State struct {
 	Ready           bool
 	MessageViewport viewport.Model
 	ContentViewport viewport.Model
+	RsoGraph        viewport.Model
 	Controls        Controls
 }
 
@@ -57,12 +62,17 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Scroll messages
 		case "o", "p", "O", "P":
 			ScrollMessages(&m.MessageViewport, msg.String())
+
+		// Update RSO on keypress
+		case " ":
+			ui.Update(&m.RsoGraph, []int{4, 1, -3, 2, 4})
 		}
 
 	case tea.WindowSizeMsg:
 		if !m.Ready {
 			m.ContentViewport = ui.InitContent(meta.MapWidth, meta.MapHeight, m.Content)
 			m.MessageViewport = ui.InitMessage(msg.Width)
+			m.RsoGraph = ui.InitRso([]int{2, 1, -2, 0, 1})
 			m.Ready = true
 		} else {
 			m.ContentViewport.Width = meta.MapWidth
@@ -80,10 +90,16 @@ func (m State) View() string {
 		return "\n  Initializing..."
 	}
 
-	topRow := lipgloss.JoinHorizontal(lipgloss.Top,
-		mapStyle.Render(m.ContentViewport.View()),
+	rightPanel := lipgloss.JoinVertical(lipgloss.Left,
+		rsoStyle.Render(m.RsoGraph.View()),
 		messageStyle.Render(m.MessageViewport.View()),
 	)
+
+	topRow := lipgloss.JoinHorizontal(lipgloss.Top,
+		mapStyle.Render(m.ContentViewport.View()),
+		rightPanel,
+	)
+
 	bottomRow := ui.RenderStatus()
 
 	return lipgloss.JoinVertical(lipgloss.Left, topRow, bottomRow)
