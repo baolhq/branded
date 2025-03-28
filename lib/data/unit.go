@@ -27,7 +27,9 @@ type Unit struct {
 	Exp          int
 	Gender       Gender
 	Role         Role
+	Movement     int
 	Faction      int    // Initial faction of this unit toward the player's party
+	Rso          []int  // Unit Resonance graph
 	RecuitBy     []Unit // <Talk> to recuit this hostile unit
 	Support      []Unit // <Support> to increase relationship
 	SupportLevel []int  // Correspond to the <Support> array

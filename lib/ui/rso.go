@@ -16,22 +16,22 @@ func InitRso(data []int) viewport.Model {
 	return vp
 }
 
-// Update RsoGraph data
-func Update(vp *viewport.Model, data []int) {
+// UpdateRso RsoGraph data
+func UpdateRso(vp *viewport.Model, data []int) {
 	vp.SetContent(renderRso(data))
 }
 
 // renderRso returns the formatted RsoGraph
 func renderRso(data []int) string {
 	wlc := wavelinechart.New(meta.RsoWidth, meta.RsoHeight,
-		wavelinechart.WithXYRange(0, 12, -5, 5),
+		wavelinechart.WithXYRange(1, 13, -5, 5),
 		wavelinechart.WithXYSteps(1, 1))
 
 	wlc.Clear()
 	wlc.ClearAllData()
 
-	for i := range len(data) {
-		wlc.Plot(canvas.Float64Point{X: float64(i), Y: float64(data[i])})
+	for i := 1; i < len(data); i++ {
+		wlc.Plot(canvas.Float64Point{X: float64(i), Y: float64(data[i-1])})
 	}
 	wlc.Plot(canvas.Float64Point{X: 2, Y: -2})
 

@@ -1,7 +1,11 @@
 package core
 
 import (
+	"baolhq/branded/lib/meta"
+
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/viewport"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Controls struct {
@@ -9,14 +13,14 @@ type Controls struct {
 }
 
 // Handles cursor movement logic
-func (c *Controls) MoveCursor(direction string, width, height int) {
+func (c *Controls) MoveCursor(direction string) {
 	switch direction {
 	case "left", "h", "4":
 		if c.CursorX > 0 {
 			c.CursorX--
 		}
 	case "right", "l", "6":
-		if c.CursorX < width-1 {
+		if c.CursorX < meta.MapWidth-1 {
 			c.CursorX++
 		}
 	case "up", "k", "8":
@@ -24,7 +28,7 @@ func (c *Controls) MoveCursor(direction string, width, height int) {
 			c.CursorY--
 		}
 	case "down", "j", "2":
-		if c.CursorY < height-1 {
+		if c.CursorY < meta.MapHeight-1 {
 			c.CursorY++
 		}
 	case "y", "7":
@@ -33,17 +37,17 @@ func (c *Controls) MoveCursor(direction string, width, height int) {
 			c.CursorY--
 		}
 	case "u", "9":
-		if c.CursorX < width-1 && c.CursorY > 0 {
+		if c.CursorX < meta.MapWidth-1 && c.CursorY > 0 {
 			c.CursorX++
 			c.CursorY--
 		}
 	case "b", "1":
-		if c.CursorX > 0 && c.CursorY < height-1 {
+		if c.CursorX > 0 && c.CursorY < meta.MapHeight-1 {
 			c.CursorX--
 			c.CursorY++
 		}
 	case "n", "3":
-		if c.CursorX < width-1 && c.CursorY < height-1 {
+		if c.CursorX < meta.MapWidth-1 && c.CursorY < meta.MapHeight-1 {
 			c.CursorX++
 			c.CursorY++
 		}
@@ -51,15 +55,11 @@ func (c *Controls) MoveCursor(direction string, width, height int) {
 }
 
 // ScrollMessages handles scrolling in the message log
-func ScrollMessages(vp *viewport.Model, direction string) {
-	switch direction {
-	case "o":
+func ScrollMessages(vp *viewport.Model, msg tea.KeyMsg) {
+	switch {
+	case key.Matches(msg, Keys.ShoulderL):
 		vp.LineUp(1)
-	case "p":
+	case key.Matches(msg, Keys.ShoulderR):
 		vp.LineDown(1)
-	case "O":
-		vp.GotoTop()
-	case "P":
-		vp.GotoBottom()
 	}
 }
