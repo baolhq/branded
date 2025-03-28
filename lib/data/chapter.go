@@ -4,7 +4,7 @@ import "baolhq/branded/lib/meta"
 
 type Chapter struct {
 	Name  string
-	Map   [meta.MapWidth][meta.MapHeight]TileStack
+	Map   [][]TileStack
 	Units []Unit
 }
 
@@ -18,9 +18,10 @@ type TileStack struct {
 	Tiles []Tile
 }
 
-func LoadMap() [meta.MapWidth][meta.MapHeight]TileStack {
-	var m [meta.MapWidth][meta.MapHeight]TileStack
+func LoadMap() [][]TileStack {
+	m := make([][]TileStack, meta.MapWidth)
 	for x := range m {
+		m[x] = make([]TileStack, meta.MapHeight)
 		for y := range m[x] {
 			m[x][y] = TileStack{Tiles: []Tile{{Terrain: Terrain{Id: Plain, Symbol: "."}}}}
 		}

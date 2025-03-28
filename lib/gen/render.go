@@ -100,9 +100,9 @@ func SeedData(c *data.Chapter) {
 		},
 		Rso:     []int{-4, -2, 0, 1, -3, 4, 2, 4, -2, 0},
 		Symbol:  "l",
-		Faction: data.Party,
-		PosX:    3,
-		PosY:    3,
+		Faction: data.Enemy,
+		PosX:    13,
+		PosY:    10,
 	}
 
 	c.AddUnit(pLord)

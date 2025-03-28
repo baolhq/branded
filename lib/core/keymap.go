@@ -87,7 +87,7 @@ var Keys = KeyMap{
 		key.WithHelp("n/3", "D-Pad DownRight"),
 	),
 	Quit: key.NewBinding(
-		key.WithKeys("ctrl+c", "q", "esc"),
-		key.WithHelp("^C/q/Esc", "Quit"),
+		key.WithKeys("ctrl+c", "Q"),
+		key.WithHelp("^C/Q", "Quit"),
 	),
 }
