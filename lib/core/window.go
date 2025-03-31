@@ -5,6 +5,7 @@ import (
 	"baolhq/branded/lib/gen"
 	"baolhq/branded/lib/meta"
 	"baolhq/branded/lib/ui"
+	"baolhq/branded/lib/util"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -17,23 +18,26 @@ var (
 	infoStyle    = lipgloss.NewStyle().Width(meta.InfoWidth).Height(meta.InfoHeight)
 	messageStyle = lipgloss.NewStyle().Width(meta.MsgWidth).
 			Height(meta.MsgHeight).Border(lipgloss.NormalBorder(), true, false, false, false)
+	statusStyle = lipgloss.NewStyle().Width(meta.StatusWidth).
+			Border(lipgloss.NormalBorder(), true, false, false, false)
 )
 
 type Window struct {
 	Content         string
 	Chapter         data.Chapter
 	Ready           bool
+	OldMsg          []string
+	LatestMsg       string
 	MessageViewport viewport.Model
 	ContentViewport viewport.Model
-	RsoGraph        viewport.Model
 	InfoViewport    viewport.Model
 	Controls        Controls
 }
 
 func InitState() Window {
-	cX, cY := 12, 7 // Initial cursor position
-	chapter := gen.GetChapter(cX, cY)
-	gen.SeedData(&chapter)
+	chapter := data.Chapter{Map: data.LoadMap()}
+	gen.SeedData(&chapter) // NOTE: Testing purpose
+	cX, cY := util.GetLordPosition(&chapter)
 
 	return Window{
 		Chapter:  chapter,
@@ -56,40 +60,15 @@ func (w Window) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		if !w.Ready {
 			w.ContentViewport = ui.InitContent(w.Content)
-			w.MessageViewport = ui.InitMessage(msg.Width)
+			w.LatestMsg = "Latest message"
+			w.MessageViewport = ui.InitMessage(w.OldMsg, w.LatestMsg)
 
-			w.InfoViewport = ui.InitInfo(&data.Unit{
-				Name:  "Kros",
-				Level: 20,
-				Exp:   99,
-				Hp:    99, MaxHp: 99,
-				Role: data.Role{
-					Name: "Swordmaster",
-				},
-				STR: 99, DEX: 99, CON: 99,
-				INT: 99, WIS: 99, CHA: 99,
-				Items: []*data.Item{
-					{
-						Name: "Bronze Sword (E)",
-						Uses: 99,
-					},
-					{
-						Name: "Iron Lance",
-						Uses: 10,
-					},
-					{
-						Name: "Vulneraries",
-						Uses: -1,
-					},
-				},
-			})
+			lord := util.GetPartyLord(&w.Chapter)
+			w.InfoViewport = ui.InitInfo(lord)
 
 			w.Ready = true
 		} else {
-			w.ContentViewport.Width = meta.MapWidth
-			w.ContentViewport.Height = meta.MapHeight
-			w.MessageViewport.Width = meta.MsgWidth
-			w.MessageViewport.Height = meta.MsgHeight
+			w.OldMsg, w.LatestMsg = ui.UpdateMessage(w.OldMsg, w.LatestMsg)
 		}
 	}
 
@@ -111,7 +90,12 @@ func (m Window) View() string {
 		panel,
 	)
 
-	status := ui.RenderStatus()
-
+	status := statusStyle.Render(ui.UpdateStatus())
 	return lipgloss.JoinVertical(lipgloss.Left, content, status)
+}
+
+func PrintMessage(w *Window, msg string) {
+	w.OldMsg, w.LatestMsg = ui.UpdateMessage(w.OldMsg, msg)
+	w.MessageViewport.SetContent(w.LatestMsg)
+	w.MessageViewport.GotoBottom()
 }

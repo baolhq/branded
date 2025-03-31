@@ -2,10 +2,6 @@ package core
 
 import (
 	"baolhq/branded/lib/meta"
-
-	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/viewport"
-	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Controls struct {
@@ -51,15 +47,5 @@ func (c *Controls) MoveCursor(direction string) {
 			c.CursorX++
 			c.CursorY++
 		}
-	}
-}
-
-// ScrollMessages handles scrolling in the message log
-func ScrollMessages(vp *viewport.Model, msg tea.KeyMsg) {
-	switch {
-	case key.Matches(msg, Keys.ShoulderL):
-		vp.LineUp(1)
-	case key.Matches(msg, Keys.ShoulderR):
-		vp.LineDown(1)
 	}
 }

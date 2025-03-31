@@ -8,9 +8,12 @@ type KeyMap struct {
 	Select, Start         key.Binding
 	ShoulderL, ShoulderR  key.Binding
 	TriggerL, TriggerR    key.Binding
-	UpLeft, UpRight       key.Binding // Keyboard only
-	DownLeft, DownRight   key.Binding // Keyboard only
-	Quit                  key.Binding // Keboard only
+
+	// Keyboard only
+	UpLeft, UpRight     key.Binding
+	DownLeft, DownRight key.Binding
+	Quit                key.Binding
+	q                   key.Binding
 }
 
 var Keys = KeyMap{
@@ -90,4 +93,5 @@ var Keys = KeyMap{
 		key.WithKeys("ctrl+c", "Q"),
 		key.WithHelp("^C/Q", "Quit"),
 	),
+	q: key.NewBinding(key.WithKeys("q")),
 }

@@ -12,22 +12,22 @@ import (
 )
 
 var styles = map[int]lipgloss.Style{
-	data.Plain: lipgloss.NewStyle().Foreground(lipgloss.Color("#FFFFFF")),
-	data.Lava:  lipgloss.NewStyle().Foreground(lipgloss.Color("#F95454")),
+	data.Plain: lipgloss.NewStyle().Foreground(meta.White),
+	data.Lava:  lipgloss.NewStyle().Foreground(meta.Red),
 }
 
-var cursorStyle = lipgloss.NewStyle().Background(lipgloss.Color("#A1A1A1")).Bold(true)
+var cursorStyle = lipgloss.NewStyle().Background(meta.Gray).Bold(true)
 
 func setFactionStyle(style lipgloss.Style, faction int) lipgloss.Style {
 	switch faction {
 	case data.Other:
-		return style.Foreground(lipgloss.Color("#FFFFFF"))
+		return style.Foreground(meta.White)
 	case data.Party:
-		return style.Foreground(lipgloss.Color("#0D92F4"))
+		return style.Foreground(meta.Blue)
 	case data.Enemy:
-		return style.Foreground(lipgloss.Color("#F95454"))
+		return style.Foreground(meta.Red)
 	case data.Ally:
-		return style.Foreground(lipgloss.Color("#A0C878"))
+		return style.Foreground(meta.Green)
 	}
 	return style
 }
@@ -163,11 +163,6 @@ func SeedData(c *data.Chapter) {
 
 	c.AddUnit(pLord)
 	c.AddUnit(eLord)
-}
-
-func GetChapter(cX, cY int) data.Chapter {
-	c := data.Chapter{Map: data.LoadMap()}
-	return c
 }
 
 func RenderChapter(cX, cY int, c data.Chapter) string {

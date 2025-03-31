@@ -11,15 +11,17 @@ import (
 )
 
 var (
-	nameStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#0D92F4"))
+	enemyNameStyle = lipgloss.NewStyle().Foreground(meta.Red)
+	partyNameStyle = lipgloss.NewStyle().Foreground(meta.Blue)
+	allyNameStyle  = lipgloss.NewStyle().Foreground(meta.Green)
 	roleStyle      = lipgloss.NewStyle().Border(lipgloss.HiddenBorder(), false, false, true, false)
 	hpStyle        = lipgloss.NewStyle().PaddingRight(1).PaddingBottom(1)
 	expStyle       = lipgloss.NewStyle()
 	attrStyle      = lipgloss.NewStyle().Bold(true)
 	attrValueStyle = lipgloss.NewStyle().Padding(0, 1)
 	itemStyle      = lipgloss.NewStyle().Border(lipgloss.ASCIIBorder(), false, false, false, true).
-			PaddingLeft(1).Width(24)
-	itemUsesStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#A1A1A1"))
+			PaddingLeft(1).Width(meta.InfoWidth - 10)
+	itemUsesStyle = lipgloss.NewStyle().Foreground(meta.Gray)
 )
 
 // Initializes the unit info viewport
@@ -34,11 +36,50 @@ func UpdateInfo(vp *viewport.Model, u *data.Unit) {
 	vp.SetContent(renderInfo(u))
 }
 
+func renderAttribute(attr string, val int) string {
+	label := attrStyle.Render(attr)
+	value := attrValueStyle.Render(strconv.Itoa(val))
+	return lipgloss.JoinHorizontal(lipgloss.Left, label, value)
+}
+
+func renderInventory(items []*data.Item) string {
+	var item, itemUses, inventory string
+	itemCount := 0
+
+	if len(items) > 0 {
+		itemUses = itemUsesStyle.Render(items[0].UsageLeft())
+		item = itemStyle.Render(items[0].Name)
+		inventory = lipgloss.JoinHorizontal(lipgloss.Left, item, itemUses)
+		itemCount++
+	}
+	for i := 1; i < len(items); i++ {
+		itemUses = itemUsesStyle.Render(items[i].UsageLeft())
+		item = itemStyle.Render(items[i].Name)
+		temp := lipgloss.JoinHorizontal(lipgloss.Left, item, itemUses)
+		inventory = lipgloss.JoinVertical(lipgloss.Top, inventory, temp)
+		itemCount++
+	}
+	for i := itemCount + 1; i >= 0; i-- {
+		item = itemStyle.Render("")
+		inventory = lipgloss.JoinVertical(lipgloss.Top, inventory, item)
+	}
+
+	return inventory
+}
+
 // renderInfo returns the formatted InfoViewport
 func renderInfo(u *data.Unit) string {
-	var attrText, attrVal string
+	var name string
 
-	name := nameStyle.Render(u.Name)
+	switch u.Faction {
+	case data.Party:
+		name = partyNameStyle.Render(u.Name)
+	case data.Enemy:
+		name = enemyNameStyle.Render(u.Name)
+	default:
+		name = allyNameStyle.Render(u.Name)
+	}
+
 	roleText := fmt.Sprintf("%s L%d", u.Role.Name, u.Level)
 	role := roleStyle.Render(roleText)
 	topBlock := lipgloss.JoinVertical(lipgloss.Top, name, role)
@@ -49,55 +90,16 @@ func renderInfo(u *data.Unit) string {
 	exp := expStyle.Render(expText)
 	hpBlock := lipgloss.JoinHorizontal(lipgloss.Left, hp, exp)
 
-	attrText = attrStyle.Render("STR")
-	attrVal = attrValueStyle.Render(strconv.Itoa(u.STR))
-	strength := lipgloss.JoinHorizontal(lipgloss.Left, attrText, attrVal)
+	str := renderAttribute("STR", u.STR)
+	dex := renderAttribute("DEX", u.DEX)
+	con := renderAttribute("CON", u.CON)
+	intel := renderAttribute("INT", u.INT)
+	wis := renderAttribute("WIS", u.WIS)
+	cha := renderAttribute("STR", u.CHA)
+	leftBlock := lipgloss.JoinVertical(lipgloss.Top, str, dex, con, intel, wis, cha)
 
-	attrText = attrStyle.Render("DEX")
-	attrVal = attrValueStyle.Render(strconv.Itoa(u.DEX))
-	dexterity := lipgloss.JoinHorizontal(lipgloss.Left, attrText, attrVal)
-
-	attrText = attrStyle.Render("CON")
-	attrVal = attrValueStyle.Render(strconv.Itoa(u.CON))
-	constitution := lipgloss.JoinHorizontal(lipgloss.Left, attrText, attrVal)
-
-	attrText = attrStyle.Render("INT")
-	attrVal = attrValueStyle.Render(strconv.Itoa(u.INT))
-	intelligence := lipgloss.JoinHorizontal(lipgloss.Left, attrText, attrVal)
-
-	attrText = attrStyle.Render("WIS")
-	attrVal = attrValueStyle.Render(strconv.Itoa(u.WIS))
-	wisdom := lipgloss.JoinHorizontal(lipgloss.Left, attrText, attrVal)
-
-	attrText = attrStyle.Render("CHA")
-	attrVal = attrValueStyle.Render(strconv.Itoa(u.CHA))
-	charisma := lipgloss.JoinHorizontal(lipgloss.Left, attrText, attrVal)
-
-	leftBlock := lipgloss.JoinVertical(lipgloss.Top, strength, dexterity, constitution,
-		intelligence, wisdom, charisma)
-
-	var item, itemUses, inventory string
-	itemCount := 0
-
-	if len(u.Items) > 0 {
-		itemUses = itemUsesStyle.Render(u.Items[0].UsageLeft())
-		item = itemStyle.Render(u.Items[0].Name)
-		inventory = lipgloss.JoinHorizontal(lipgloss.Left, item, itemUses)
-		itemCount++
-	}
-	for i := 1; i < len(u.Items); i++ {
-		itemUses = itemUsesStyle.Render(u.Items[i].UsageLeft())
-		item = itemStyle.Render(u.Items[i].Name)
-		temp := lipgloss.JoinHorizontal(lipgloss.Left, item, itemUses)
-		inventory = lipgloss.JoinVertical(lipgloss.Top, inventory, temp)
-		itemCount++
-	}
-	for i := itemCount + 1; i >= 0; i-- {
-		item = itemStyle.Render("")
-		inventory = lipgloss.JoinVertical(lipgloss.Top, inventory, item)
-	}
-
-	bottomBlock := lipgloss.JoinHorizontal(lipgloss.Left, leftBlock, inventory)
+	items := renderInventory(u.Items)
+	bottomBlock := lipgloss.JoinHorizontal(lipgloss.Left, leftBlock, items)
 	info := lipgloss.JoinVertical(lipgloss.Top, topBlock, hpBlock, bottomBlock)
 
 	return info

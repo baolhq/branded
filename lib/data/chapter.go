@@ -2,10 +2,22 @@ package data
 
 import "baolhq/branded/lib/meta"
 
+// Chapter objectives
+const (
+	Conquest  int = iota // Defeat all enemies
+	Seize                // Take control of a target area
+	Intercept            // Prevent enemy from reaching a target area
+	Raid                 // Destroy enemy building(s)
+	Survive              // Hold your line
+	Rescue               // Free captured or defend ally unit(s)
+	Dethrone             // Take down enemy commander(s)
+)
+
 type Chapter struct {
-	Name  string
-	Map   [][]TileStack
-	Units []Unit
+	Name      string
+	Objective int
+	Map       [][]TileStack
+	Units     []Unit
 }
 
 type Tile struct {
