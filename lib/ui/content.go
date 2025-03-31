@@ -3,13 +3,14 @@ package ui
 import (
 	"baolhq/branded/lib/data"
 	"baolhq/branded/lib/gen"
+	"baolhq/branded/lib/meta"
 
 	"github.com/charmbracelet/bubbles/viewport"
 )
 
 // InitContent initializes the main game content viewport
-func InitContent(width, height int, content string) viewport.Model {
-	vp := viewport.New(width-4, height-4)
+func InitContent(content string) viewport.Model {
+	vp := viewport.New(meta.MapWidth, meta.MapHeight)
 	vp.SetContent(content)
 	return vp
 }

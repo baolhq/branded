@@ -13,11 +13,10 @@ import (
 
 var (
 	mapStyle = lipgloss.NewStyle().Width(meta.MapWidth).
-			Height(meta.MapHeight).Border(lipgloss.RoundedBorder())
+			Height(meta.MapHeight).Border(lipgloss.NormalBorder(), false, true, false, false)
+	infoStyle    = lipgloss.NewStyle().Width(meta.InfoWidth).Height(meta.InfoHeight)
 	messageStyle = lipgloss.NewStyle().Width(meta.MsgWidth).
-			Height(meta.MsgHeight).Border(lipgloss.RoundedBorder())
-	rsoStyle = lipgloss.NewStyle().Width(meta.RsoWidth).
-			Height(meta.RsoHeight).Border(lipgloss.HiddenBorder(), true, false, false, false)
+			Height(meta.MsgHeight).Border(lipgloss.NormalBorder(), true, false, false, false)
 )
 
 type Window struct {
@@ -27,6 +26,7 @@ type Window struct {
 	MessageViewport viewport.Model
 	ContentViewport viewport.Model
 	RsoGraph        viewport.Model
+	InfoViewport    viewport.Model
 	Controls        Controls
 }
 
@@ -55,9 +55,35 @@ func (w Window) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.WindowSizeMsg:
 		if !w.Ready {
-			w.ContentViewport = ui.InitContent(meta.MapWidth, meta.MapHeight, w.Content)
+			w.ContentViewport = ui.InitContent(w.Content)
 			w.MessageViewport = ui.InitMessage(msg.Width)
-			w.RsoGraph = ui.InitRso([]int{2, 1, -2, 0, 1})
+
+			w.InfoViewport = ui.InitInfo(&data.Unit{
+				Name:  "Kros",
+				Level: 20,
+				Exp:   99,
+				Hp:    99, MaxHp: 99,
+				Role: data.Role{
+					Name: "Swordmaster",
+				},
+				STR: 99, DEX: 99, CON: 99,
+				INT: 99, WIS: 99, CHA: 99,
+				Items: []*data.Item{
+					{
+						Name: "Bronze Sword (E)",
+						Uses: 99,
+					},
+					{
+						Name: "Iron Lance",
+						Uses: 10,
+					},
+					{
+						Name: "Vulneraries",
+						Uses: -1,
+					},
+				},
+			})
+
 			w.Ready = true
 		} else {
 			w.ContentViewport.Width = meta.MapWidth
@@ -75,17 +101,17 @@ func (m Window) View() string {
 		return "\n  Initializing..."
 	}
 
-	rightPanel := lipgloss.JoinVertical(lipgloss.Left,
-		rsoStyle.Render(m.RsoGraph.View()),
+	panel := lipgloss.JoinVertical(lipgloss.Left,
+		infoStyle.Render(m.InfoViewport.View()),
 		messageStyle.Render(m.MessageViewport.View()),
 	)
 
-	topRow := lipgloss.JoinHorizontal(lipgloss.Top,
+	content := lipgloss.JoinHorizontal(lipgloss.Top,
 		mapStyle.Render(m.ContentViewport.View()),
-		rightPanel,
+		panel,
 	)
 
-	bottomRow := ui.RenderStatus()
+	status := ui.RenderStatus()
 
-	return lipgloss.JoinVertical(lipgloss.Left, topRow, bottomRow)
+	return lipgloss.JoinVertical(lipgloss.Left, content, status)
 }

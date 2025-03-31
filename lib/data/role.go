@@ -92,6 +92,7 @@ type Prerequisite struct {
 // Role represents a character archetype
 type Role struct {
 	Id           int
+	Name         string
 	Desc         string
 	Prerequisite Prerequisite
 	WeaponProf   []int

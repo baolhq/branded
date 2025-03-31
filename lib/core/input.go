@@ -25,7 +25,7 @@ func HandleInput(win Window, msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 		// Update RSO graph when cursor moves onto a unit
 		if unit := win.Chapter.GetUnitAt(cX, cY); unit != nil {
-			ui.UpdateRso(&win.RsoGraph, unit.Rso)
+			ui.UpdateInfo(&win.InfoViewport, unit)
 		}
 
 	case key.Matches(msg, Keys.A):

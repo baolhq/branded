@@ -1,6 +1,7 @@
 package gen
 
 import (
+	"fmt"
 	"strings"
 
 	"baolhq/branded/lib/data"
@@ -40,12 +41,35 @@ func SeedData(c *data.Chapter) {
 
 	for i := 0; i < 20; i++ {
 		unit := data.Unit{}
+		unit.Name = fmt.Sprintf("Unit %d", i)
+		unit.Level = i
+		unit.Exp = i*5 - 1
+		unit.Hp = i*5 - 10
+		unit.MaxHp = i*5 - 1
 		unit.Role = data.Role{
-			Id: util.RandInt(0, data.Lord),
+			Id:   util.RandInt(0, data.Lord),
+			Name: fmt.Sprintf("Role %d", i),
 		}
+		unit.STR = i*5 - 1
+		unit.DEX = i*5 - 2
+		unit.CON = i*5 - 3
+		unit.INT = i*5 - 4
+		unit.WIS = i*5 - 5
+		unit.CHA = i*5 - 6
 
-		for j := 0; j < 10; j++ {
-			unit.Rso = append(unit.Rso, util.RandInt(-5, 5))
+		unit.Items = []*data.Item{
+			{
+				Name: "Bronze Sword (E)",
+				Uses: 99,
+			},
+			{
+				Name: "Iron Lance",
+				Uses: 10,
+			},
+			{
+				Name: fmt.Sprintf("Vulnararies %d", i),
+				Uses: -1,
+			},
 		}
 
 		switch unit.Role.Id {
@@ -84,10 +108,26 @@ func SeedData(c *data.Chapter) {
 	}
 
 	pLord := data.Unit{
+		Name:  "Kros",
+		Level: 20,
+		Exp:   99,
+		Hp:    99, MaxHp: 99,
+		STR: 99, DEX: 99, CON: 99,
+		INT: 99, WIS: 99, CHA: 99,
 		Role: data.Role{
-			Id: data.Lord,
+			Id:   data.Lord,
+			Name: "Lord",
 		},
-		Rso:     []int{4, 2, 0, 1, -2, -3, -3, 0, 4, 5},
+		Items: []*data.Item{
+			{
+				Name: "Falchion (E)",
+				Uses: 99,
+			},
+			{
+				Name: "Iron Lance",
+				Uses: 10,
+			},
+		},
 		Symbol:  "l",
 		Faction: data.Party,
 		PosX:    3,
@@ -95,10 +135,26 @@ func SeedData(c *data.Chapter) {
 	}
 
 	eLord := data.Unit{
+		Name:  "Morgan",
+		Level: 20,
+		Exp:   99,
+		Hp:    99, MaxHp: 99,
+		STR: 99, DEX: 99, CON: 99,
+		INT: 99, WIS: 99, CHA: 99,
 		Role: data.Role{
-			Id: data.Lord,
+			Id:   data.Lord,
+			Name: "Lord",
 		},
-		Rso:     []int{-4, -2, 0, 1, -3, 4, 2, 4, -2, 0},
+		Items: []*data.Item{
+			{
+				Name: "Steel Lance (E)",
+				Uses: 99,
+			},
+			{
+				Name: "Iron Lance",
+				Uses: 10,
+			},
+		},
 		Symbol:  "l",
 		Faction: data.Enemy,
 		PosX:    13,

@@ -21,18 +21,19 @@ const (
 
 // Unit represent a single unit in game
 type Unit struct {
-	Name         string
-	Symbol       string
-	Level        int
-	Exp          int
-	Gender       Gender
-	Role         Role
-	Movement     int
-	Faction      int    // Initial faction of this unit toward the player's party
-	Rso          []int  // Unit Resonance graph
-	RecuitBy     []Unit // <Talk> to recuit this hostile unit
-	Support      []Unit // <Support> to increase relationship
-	SupportLevel []int  // Correspond to the <Support> array
+	Name     string
+	Symbol   string
+	Level    int
+	Hp       int
+	MaxHp    int
+	Exp      int
+	Gender   Gender
+	Role     Role
+	Movement int
+	Faction  int     // Initial faction of this unit toward the player's party
+	RecuitBy []Unit  // <Talk> to recuit this hostile unit
+	Items    []*Item // Consumables, held items
+	Weapons  []Weapon
 
 	// Base attribute bonuses
 	STR, DEX, CON int
