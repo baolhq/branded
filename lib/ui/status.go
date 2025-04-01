@@ -13,8 +13,8 @@ var (
 
 // UpdateStatus generates the status bar display
 func UpdateStatus() string {
-	chapterStyle := chapterStyle.Render("Chapter I: Incursion")
-	stats := statsStyle.Render("INTERCEPT - TURN: 99 READY: 99 ENEMIES: 99")
+	chapterStyle := chapterStyle.Render("Chapter XVIII: Oath of Steel")
+	stats := statsStyle.Render("CONQUEST - TURN: 99 READY: 99 ENEMIES: 99")
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, chapterStyle, stats)
 }

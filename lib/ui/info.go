@@ -14,14 +14,16 @@ var (
 	enemyNameStyle = lipgloss.NewStyle().Foreground(meta.Red)
 	partyNameStyle = lipgloss.NewStyle().Foreground(meta.Blue)
 	allyNameStyle  = lipgloss.NewStyle().Foreground(meta.Green)
-	roleStyle      = lipgloss.NewStyle().Border(lipgloss.HiddenBorder(), false, false, true, false)
-	hpStyle        = lipgloss.NewStyle().PaddingRight(1).PaddingBottom(1)
+	brandStyle     = lipgloss.NewStyle().PaddingLeft(1)
+	hpStyle        = lipgloss.NewStyle().Padding(0, 1, 1, 0)
 	expStyle       = lipgloss.NewStyle()
 	attrStyle      = lipgloss.NewStyle().Bold(true)
 	attrValueStyle = lipgloss.NewStyle().Padding(0, 1)
 	itemStyle      = lipgloss.NewStyle().Border(lipgloss.ASCIIBorder(), false, false, false, true).
 			PaddingLeft(1).Width(meta.InfoWidth - 10)
-	itemUsesStyle = lipgloss.NewStyle().Foreground(meta.Gray)
+	itemUsesStyle   = lipgloss.NewStyle().Foreground(meta.Gray)
+	skillsStyle     = lipgloss.NewStyle().Underline(true).PaddingRight(1)
+	skillBlockStyle = lipgloss.NewStyle().Width(meta.InfoWidth).Align(lipgloss.Center).PaddingTop(1)
 )
 
 // Initializes the unit info viewport
@@ -59,12 +61,26 @@ func renderInventory(items []*data.Item) string {
 		inventory = lipgloss.JoinVertical(lipgloss.Top, inventory, temp)
 		itemCount++
 	}
-	for i := itemCount + 1; i >= 0; i-- {
+	for i := itemCount; i <= 5; i++ {
 		item = itemStyle.Render("")
 		inventory = lipgloss.JoinVertical(lipgloss.Top, inventory, item)
 	}
 
 	return inventory
+}
+
+func renderSkills(skills []string) string {
+	var res string
+
+	if len(skills) > 0 {
+		res = skillsStyle.Render(skills[0])
+	}
+
+	for i := 1; i < len(skills); i++ {
+		temp := skillsStyle.Render(skills[i])
+		res = lipgloss.JoinHorizontal(lipgloss.Left, res, temp)
+	}
+	return res
 }
 
 // renderInfo returns the formatted InfoViewport
@@ -80,9 +96,9 @@ func renderInfo(u *data.Unit) string {
 		name = allyNameStyle.Render(u.Name)
 	}
 
-	roleText := fmt.Sprintf("%s L%d", u.Role.Name, u.Level)
-	role := roleStyle.Render(roleText)
-	topBlock := lipgloss.JoinVertical(lipgloss.Top, name, role)
+	brandText := fmt.Sprintf("- %s L%d", u.Brand.Name, u.Level)
+	brand := brandStyle.Render(brandText)
+	nameBlock := lipgloss.JoinHorizontal(lipgloss.Top, name, brand)
 
 	hpText := fmt.Sprintf("HP: %d/%d", u.Hp, u.MaxHp)
 	expText := fmt.Sprintf("EXP: %d", u.Exp)
@@ -99,8 +115,11 @@ func renderInfo(u *data.Unit) string {
 	leftBlock := lipgloss.JoinVertical(lipgloss.Top, str, dex, con, intel, wis, cha)
 
 	items := renderInventory(u.Items)
-	bottomBlock := lipgloss.JoinHorizontal(lipgloss.Left, leftBlock, items)
-	info := lipgloss.JoinVertical(lipgloss.Top, topBlock, hpBlock, bottomBlock)
+	centerBlock := lipgloss.JoinHorizontal(lipgloss.Left, leftBlock, items)
 
+	skills := []string{"Dual Strike+", "Dual Guard+", "Limit Breaker", "Strength +2", "Lucky Seven"}
+	skillBlock := skillBlockStyle.Render(renderSkills(skills))
+
+	info := lipgloss.JoinVertical(lipgloss.Top, nameBlock, hpBlock, centerBlock, skillBlock)
 	return info
 }

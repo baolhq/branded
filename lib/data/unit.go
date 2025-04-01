@@ -1,23 +1,45 @@
 package data
 
-// Gender enum
 type Gender int
 
 const (
-	Male Gender = iota
+	Unknown Gender = iota
+	Male
 	Female
-	Unknown
 )
 
-// Faction enum
+func (g Gender) String() string {
+	switch g {
+	case Unknown:
+		return "Unknown"
+	case Male:
+		return "Male"
+	default:
+		return "Female"
+	}
+}
+
 type Faction int
 
 const (
-	Other int = iota
+	Other Faction = iota
 	Party
 	Enemy
 	Ally
 )
+
+func (f Faction) String() string {
+	switch f {
+	case Other:
+		return "Other"
+	case Party:
+		return "Party"
+	case Enemy:
+		return "Enemy"
+	default:
+		return "Ally"
+	}
+}
 
 // Unit represent a single unit in game
 type Unit struct {
@@ -28,12 +50,11 @@ type Unit struct {
 	MaxHp    int
 	Exp      int
 	Gender   Gender
-	Role     Role
+	Brand    Brand
 	Movement int
-	Faction  int     // Initial faction of this unit toward the player's party
+	Faction  Faction // Initial faction of this unit toward the player's party
 	RecuitBy []Unit  // <Talk> to recuit this hostile unit
 	Items    []*Item // Consumables, held items
-	Weapons  []Weapon
 
 	// Base attribute bonuses
 	STR, DEX, CON int

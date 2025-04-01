@@ -7,7 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// HandleInput processes player input based on state
+// Trigger events based on player keypresses
 func HandleInput(w Window, msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -18,18 +18,9 @@ func HandleInput(w Window, msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case key.Matches(msg, Keys.Quit):
 		return w, tea.Quit
 
-	// Move cursor with direction keys
 	case key.Matches(msg, Keys.Up, Keys.Down, Keys.Left, Keys.Right,
 		Keys.UpLeft, Keys.UpRight, Keys.DownLeft, Keys.DownRight):
-		w.Controls.MoveCursor(msg.String())
-
-		cX, cY := w.Controls.CursorX, w.Controls.CursorY
-		ui.UpdateContent(&w.ContentViewport, cX, cY, w.Chapter)
-
-		// Update RSO graph when cursor moves onto a unit
-		if unit := w.Chapter.GetUnitAt(cX, cY); unit != nil {
-			ui.UpdateInfo(&w.InfoViewport, unit)
-		}
+		handleDPad(&w, msg)
 
 	case key.Matches(msg, Keys.A):
 		handleAButton(&w)
@@ -92,5 +83,18 @@ func handleShoulderR(w *Window) (tea.Model, tea.Cmd) {
 	} else {
 		w.MessageViewport.LineDown(1)
 	}
+	return w, nil
+}
+
+func handleDPad(w *Window, msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	w.Controls.MoveCursor(msg)
+
+	cX, cY := w.Controls.CursorX, w.Controls.CursorY
+	ui.UpdateContent(&w.ContentViewport, cX, cY, w.Chapter)
+
+	if unit := w.Chapter.GetUnitAt(cX, cY); unit != nil {
+		ui.UpdateInfo(&w.InfoViewport, unit)
+	}
+
 	return w, nil
 }

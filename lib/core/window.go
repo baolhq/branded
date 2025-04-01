@@ -36,7 +36,7 @@ type Window struct {
 
 func InitState() Window {
 	chapter := data.Chapter{Map: data.LoadMap()}
-	gen.SeedData(&chapter) // NOTE: Testing purpose
+	util.SeedData(&chapter) // NOTE: Testing purpose
 	cX, cY := util.GetLordPosition(&chapter)
 
 	return Window{

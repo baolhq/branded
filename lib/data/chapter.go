@@ -1,6 +1,8 @@
 package data
 
-import "baolhq/branded/lib/meta"
+import (
+	"baolhq/branded/lib/meta"
+)
 
 // Chapter objectives
 const (
@@ -23,7 +25,7 @@ type Chapter struct {
 type Tile struct {
 	Terrain Terrain
 	Object  Object
-	Faction Faction
+	Faction int
 }
 
 type TileStack struct {
@@ -60,8 +62,15 @@ func (c *Chapter) AddObject(x, y int, terrain *Terrain, object *Object) {
 }
 
 func (c *Chapter) AddUnit(unit Unit) {
+	// Avoid overlapping
+	if c.GetUnitAt(unit.PosX, unit.PosY) != nil {
+		return
+	}
+
 	if unit.PosX >= 0 && unit.PosX < meta.MapWidth &&
 		unit.PosY >= 0 && unit.PosY < meta.MapHeight {
+
+		// Adding a plain tile before unit
 		if len(c.Map[unit.PosX][unit.PosY].Tiles) == 0 {
 			c.AddObject(unit.PosX, unit.PosY, &Terrain{Id: Plain}, nil)
 		}

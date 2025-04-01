@@ -2,6 +2,9 @@ package core
 
 import (
 	"baolhq/branded/lib/meta"
+
+	"github.com/charmbracelet/bubbles/key"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Controls struct {
@@ -9,40 +12,40 @@ type Controls struct {
 }
 
 // Handles cursor movement logic
-func (c *Controls) MoveCursor(direction string) {
-	switch direction {
-	case "left", "h", "4":
+func (c *Controls) MoveCursor(msg tea.KeyMsg) {
+	switch {
+	case key.Matches(msg, Keys.Left):
 		if c.CursorX > 0 {
 			c.CursorX--
 		}
-	case "right", "l", "6":
+	case key.Matches(msg, Keys.Right):
 		if c.CursorX < meta.MapWidth-1 {
 			c.CursorX++
 		}
-	case "up", "k", "8":
+	case key.Matches(msg, Keys.Up):
 		if c.CursorY > 0 {
 			c.CursorY--
 		}
-	case "down", "j", "2":
+	case key.Matches(msg, Keys.Down):
 		if c.CursorY < meta.MapHeight-1 {
 			c.CursorY++
 		}
-	case "y", "7":
+	case key.Matches(msg, Keys.UpLeft):
 		if c.CursorX > 0 && c.CursorY > 0 {
 			c.CursorX--
 			c.CursorY--
 		}
-	case "u", "9":
+	case key.Matches(msg, Keys.UpRight):
 		if c.CursorX < meta.MapWidth-1 && c.CursorY > 0 {
 			c.CursorX++
 			c.CursorY--
 		}
-	case "b", "1":
+	case key.Matches(msg, Keys.DownLeft):
 		if c.CursorX > 0 && c.CursorY < meta.MapHeight-1 {
 			c.CursorX--
 			c.CursorY++
 		}
-	case "n", "3":
+	case key.Matches(msg, Keys.DownRight):
 		if c.CursorX < meta.MapWidth-1 && c.CursorY < meta.MapHeight-1 {
 			c.CursorX++
 			c.CursorY++
