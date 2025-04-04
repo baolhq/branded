@@ -4,6 +4,8 @@ A turn-based strategy game inspired by classic Fire Emblem titles and D&D-style 
 
 _Built with passion, caffeine, and just a little bit of frustration._
 
+![Branded Preview 2025-04-04](https://i.imgur.com/MXYJD2x.png)
+
 ### What is This?
 
 Ever wanted to play Fire Emblem but with dice rolls? Welcome to Branded! Here, your attacks aren't just predetermined numbers—they're at the mercy of the RNG gods. Every swing of your sword, every dodge, every spell... it all depends on a roll of the dice.
