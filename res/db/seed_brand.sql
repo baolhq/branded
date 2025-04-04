@@ -55,7 +55,7 @@ INSERT INTO brands (name, info, letter, bonus_ac,
 
 ('Templar', 'A holy knight who combines combat prowess and healing', 't', 4, 22, 18, 18, 40, 30, 30, 20, 10, 10, 0, 0, 10),
 ('Crusader', 'A holy warrior on a divine mission, wielding powerful magic', 'T', 4, 35, 30, 35, 45, 38, 35, 20, 10, 10, 0, 0, 10),
-('Inquisitor', 'A fierce crusader with a relentless pursuit of justice', 'T', 35, 30, 35, 45, 38, 35, 20, 10, 10, 0, 0, 10),
+('Inquisitor', 'A fierce crusader with a relentless pursuit of justice', 'T', 4, 35, 30, 35, 45, 38, 35, 20, 10, 10, 0, 0, 10),
 
 ('Lord', 'The noble leader, with balanced strength and leadership', '@', 4, 20, 20, 20, 15, 16, 16, 20, 10, 10, 0, 0, 10),
 ('Great Lord', 'A legendary leader with extraordinary strength and authority', '@', 4, 45, 43, 46, 30, 30, 40, 20, 10, 10, 0, 0, 10);

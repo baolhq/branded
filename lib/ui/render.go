@@ -9,22 +9,17 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var styles = map[int]lipgloss.Style{
-	data.Plain: lipgloss.NewStyle().Foreground(meta.White),
-	data.Lava:  lipgloss.NewStyle().Foreground(meta.Red),
-}
-
 var cursorStyle = lipgloss.NewStyle().Background(meta.Gray).Bold(true)
 
-func setFactionStyle(style lipgloss.Style, faction data.Faction) lipgloss.Style {
+func setFactionStyle(style lipgloss.Style, faction string) lipgloss.Style {
 	switch faction {
-	case data.Other:
+	case "Other":
 		return style.Foreground(meta.White)
-	case data.Party:
+	case "Party":
 		return style.Foreground(meta.Blue)
-	case data.Enemy:
+	case "Enemy":
 		return style.Foreground(meta.Red)
-	case data.Ally:
+	case "Ally":
 		return style.Foreground(meta.Green)
 	}
 	return style
@@ -43,7 +38,6 @@ func RenderChapter(cX, cY int, c data.Chapter) string {
 				style = setFactionStyle(lipgloss.NewStyle(), unit.Faction)
 				char = unit.Brand.Letter
 			} else {
-				style = styles[0] // Default to white
 				tile := c.Map[x][y].Tiles[len(c.Map[x][y].Tiles)-1]
 
 				if tile.Object.Id > 0 {

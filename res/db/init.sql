@@ -1,12 +1,27 @@
+DROP TABLE IF EXISTS brands;
+DROP TABLE IF EXISTS brand_prerequisites;
+DROP TABLE IF EXISTS brand_weapons;
+DROP TABLE IF EXISTS factions;
+DROP TABLE IF EXISTS genders;
+DROP TABLE IF EXISTS items;
+DROP TABLE IF EXISTS objects;
+DROP TABLE IF EXISTS terrains;
+DROP TABLE IF EXISTS units;
+DROP TABLE IF EXISTS unit_inventories;
+DROP TABLE IF EXISTS unit_recuiters;
+DROP TABLE IF EXISTS weapons;
+DROP TABLE IF EXISTS weapon_ranks;
+DROP TABLE IF EXISTS weapon_types;
+
 CREATE TABLE items (
 	id 					INTEGER PRIMARY KEY AUTOINCREMENT,
 	name 					TEXT UNIQUE NOT NULL,
-	info 					TEXT,
-	uses 					INTEGER,
-	price 				INTEGER,
+	info 					TEXT NOT NULL DEFAULT '',
+	uses 					INTEGER NOT NULL DEFAULT 0,
+	price 				INTEGER NOT NULL DEFAULT 0,
 	is_consumable 		INTEGER NOT NULL DEFAULT 1,
-	effect_type 		TEXT,
-	effect_value 		INT,
+	effect_type 		TEXT NOT NULL DEFAULT '',
+	effect_value 		INT NOT NULL DEFAULT 0,
 	effect_duration	INTEGER NOT NULL DEFAULT 0
 );
 
@@ -38,7 +53,7 @@ CREATE TABLE weapons (
 CREATE TABLE terrains (
 	id 					INTEGER PRIMARY KEY AUTOINCREMENT,
 	name 					TEXT UNIQUE NOT NULL,
-	info 					TEXT,
+	info 					TEXT NOT NULL DEFAULT '',
 	letter  				TEXT NOT NULL,
 	movement_cost 		INTEGER NOT NULL,
 	walkable 			INTEGER NOT NULL,
@@ -49,7 +64,7 @@ CREATE TABLE terrains (
 CREATE TABLE objects (
 	id 					INTEGER PRIMARY KEY AUTOINCREMENT,
 	name					TEXT UNIQUE NOT NULL,
-	info  				TEXT,
+	info  				TEXT NOT NULL DEFAULT '',
 	letter 				TEXT NOT NULL,
 	walkable 			INTEGER NOT NULL,
 	destroyable 		INTEGER NOT NULL,
@@ -61,7 +76,7 @@ CREATE TABLE objects (
 CREATE TABLE brands (
 	id 					INTEGER PRIMARY KEY AUTOINCREMENT,
 	name 					TEXT UNIQUE NOT NULL,
-	info			 		TEXT,
+	info			 		TEXT NOT NULL DEFAULT '',
 	letter 				TEXT NOT NULL,
 	bonus_ac				INTEGER NOT NULL,
 	max_str				INTEGER NOT NULL,
@@ -79,13 +94,13 @@ CREATE TABLE brands (
 );
 
 CREATE TABLE genders (
-	name TEXT PRIMARY KEY
+	name 					TEXT PRIMARY KEY
 );
 
 CREATE TABLE brand_prerequisites (
 	brand_id 			INTEGER PRIMARY KEY,
 	level  				INTEGER NOT NULL,
-	gender 				TEXT,
+	gender 				TEXT NOT NULL DEFAULT '',
 	
 	FOREIGN KEY (brand_id) REFERENCES brands(id),
 	FOREIGN KEY (gender) REFERENCES genders(name)
@@ -103,7 +118,7 @@ CREATE TABLE brand_weapons (
 );
 
 CREATE TABLE factions (
-	name TEXT PRIMARY KEY
+	name 					TEXT PRIMARY KEY
 );
 
 CREATE TABLE units (

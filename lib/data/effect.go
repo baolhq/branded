@@ -1,16 +1,16 @@
 package data
 
-func UseItem(u *Unit, i *Item) {
+func UseItem(u *Unit, i *Item, c *Chapter) {
 	if i.EffectDuration > 0 {
 		// Short-term buff with countdown
-		ApplyShortTermBuff(u, i)
+		ApplyShortTermBuff(u, i, c)
 	} else {
-		// Permanent buff (no countdown)
-		ApplyPermanentBuff(u, i)
+		// Permanent buff or consumables (no countdown)
+		ApplyPermanentBuff(u, i, c)
 	}
 }
 
-func ApplyShortTermBuff(u *Unit, i *Item) {
+func ApplyShortTermBuff(u *Unit, i *Item, c *Chapter) {
 	switch i.EffectType {
 	case "boost_str":
 		u.Str += i.EffectValue
@@ -36,7 +36,7 @@ func ApplyShortTermBuff(u *Unit, i *Item) {
 	}
 }
 
-func ApplyPermanentBuff(u *Unit, i *Item) {
+func ApplyPermanentBuff(u *Unit, i *Item, c *Chapter) {
 	switch i.EffectType {
 	case "heal_hp":
 		u.Hp += i.EffectValue
@@ -44,7 +44,7 @@ func ApplyPermanentBuff(u *Unit, i *Item) {
 			u.Hp = u.MaxHp
 		}
 	case "lighten":
-		LightenSurrounding(u.PosX, u.PosY, i.EffectValue)
+		LightenSurrounding(u.PosX, u.PosY, i.EffectValue, c)
 	case "boost_str":
 		u.Str += i.EffectValue
 	case "boost_dex":
@@ -62,6 +62,18 @@ func ApplyPermanentBuff(u *Unit, i *Item) {
 	}
 }
 
-func LightenSurrounding(x, y, r int) {
-	// TODO: Implement fog of war logic
+func LightenSurrounding(x, y, r int, c *Chapter) {
+	// Lighten the surrounding area within radius r
+	for dx := -r; dx <= r; dx++ {
+		for dy := -r; dy <= r; dy++ {
+			// Calculate the distance from the center
+			if dx*dx+dy*dy <= r*r {
+				// Ensure the coordinates are within map bounds
+				nx, ny := x+dx, y+dy
+				if nx >= 0 && ny >= 0 && nx < len(c.Map) && ny < len(c.Map[0]) {
+					c.Map[nx][ny].Visible = true
+				}
+			}
+		}
+	}
 }

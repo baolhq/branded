@@ -16,7 +16,7 @@ func GetPartyLord(c *data.Chapter) *data.Unit {
 			unit := c.GetUnitAt(x, y)
 			if unit != nil &&
 				unit.Brand.Name == "Lord" &&
-				unit.Faction == data.Party {
+				unit.Faction == "Party" {
 				return unit
 			}
 		}

@@ -18,7 +18,7 @@ const (
 type Chapter struct {
 	Name      string
 	Objective int
-	Map       [][]TileStack
+	Map       [][]Cell
 	Units     []Unit
 }
 
@@ -28,16 +28,25 @@ type Tile struct {
 	Faction int
 }
 
-type TileStack struct {
-	Tiles []Tile
+type Cell struct {
+	Tiles   []Tile
+	Visible bool
 }
 
-func LoadMap() [][]TileStack {
-	m := make([][]TileStack, meta.MapWidth)
+func LoadMap() [][]Cell {
+	m := make([][]Cell, meta.MapWidth)
 	for x := range m {
-		m[x] = make([]TileStack, meta.MapHeight)
+		m[x] = make([]Cell, meta.MapHeight)
 		for y := range m[x] {
-			m[x][y] = TileStack{Tiles: []Tile{{Terrain: Terrain{Id: Plain, Letter: "."}}}}
+			m[x][y] = Cell{Tiles: []Tile{{Terrain: Terrain{
+				Name:         "Plain",
+				Info:         "Flat land with no cover",
+				Letter:       ".",
+				MovementCost: 1,
+				Walkable:     true,
+				Diggable:     true,
+				BonusAc:      0,
+			}}}}
 		}
 	}
 	return m
@@ -46,7 +55,15 @@ func LoadMap() [][]TileStack {
 func (c *Chapter) AddObject(x, y int, terrain *Terrain, object *Object) {
 	if x >= 0 && x < meta.MapWidth && y >= 0 && y < meta.MapHeight {
 		if len(c.Map[x][y].Tiles) == 0 {
-			c.Map[x][y].Tiles = append(c.Map[x][y].Tiles, Tile{Terrain: Terrain{Id: Plain}})
+			c.Map[x][y].Tiles = append(c.Map[x][y].Tiles, Tile{Terrain: Terrain{
+				Name:         "Plain",
+				Info:         "Flat land with no cover",
+				Letter:       ".",
+				MovementCost: 1,
+				Walkable:     true,
+				Diggable:     true,
+				BonusAc:      0,
+			}})
 		}
 
 		newTile := Tile{}
@@ -72,7 +89,7 @@ func (c *Chapter) AddUnit(unit Unit) {
 
 		// Adding a plain tile before unit
 		if len(c.Map[unit.PosX][unit.PosY].Tiles) == 0 {
-			c.AddObject(unit.PosX, unit.PosY, &Terrain{Id: Plain}, nil)
+			c.AddObject(unit.PosX, unit.PosY, &Terrain{Letter: "."}, nil)
 		}
 		c.Units = append(c.Units, unit)
 	}

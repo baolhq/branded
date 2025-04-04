@@ -4,20 +4,16 @@ import (
 	"baolhq/branded/lib/data"
 	"baolhq/branded/lib/meta"
 	"fmt"
-	"log"
 )
 
 func SeedData(c *data.Chapter) {
-	c.AddObject(10, 5, &data.Terrain{Id: data.Lava, Letter: "{"}, nil)
-	c.AddObject(20, 8, &data.Terrain{Id: data.Lava, Letter: "{"}, nil)
+	c.AddObject(10, 5, &data.Terrain{Letter: "{"}, nil)
+	c.AddObject(20, 8, &data.Terrain{Letter: "{"}, nil)
 
 	c.AddObject(12, 13, nil, &data.Object{Id: data.Wall, Letter: "#"})
 	c.AddObject(12, 14, nil, &data.Object{Id: data.Door, Letter: "+"})
 
-	brands, err := LoadData("./res/db/brands.dat")
-	if err != nil {
-		log.Fatal(err)
-	}
+	brands := DecodeBrands()
 
 	for i := 0; i < len(brands)-2; i++ {
 		unit := data.Unit{}
@@ -50,9 +46,9 @@ func SeedData(c *data.Chapter) {
 		}
 
 		if RandInt(0, 2) < 1 {
-			unit.Faction = data.Party
+			unit.Faction = "Party"
 		} else {
-			unit.Faction = data.Enemy
+			unit.Faction = "Enemy"
 		}
 
 		unit.PosX = RandInt(0, meta.MapWidth)
@@ -82,7 +78,7 @@ func SeedData(c *data.Chapter) {
 				Uses: 10,
 			},
 		},
-		Faction: data.Party,
+		Faction: "Party",
 		PosX:    3,
 		PosY:    2,
 	}
@@ -108,7 +104,7 @@ func SeedData(c *data.Chapter) {
 				Uses: 10,
 			},
 		},
-		Faction: data.Enemy,
+		Faction: "Enemy",
 		PosX:    40,
 		PosY:    19,
 	}

@@ -88,9 +88,9 @@ func renderInfo(u *data.Unit) string {
 	var name string
 
 	switch u.Faction {
-	case data.Party:
+	case "Party":
 		name = partyNameStyle.Render(u.Name)
-	case data.Enemy:
+	case "Enemy":
 		name = enemyNameStyle.Render(u.Name)
 	default:
 		name = allyNameStyle.Render(u.Name)

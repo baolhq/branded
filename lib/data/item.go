@@ -2,37 +2,6 @@ package data
 
 import "fmt"
 
-const (
-	Herb int = iota + 1
-	RareHerb
-	MysticHerb
-	Torch
-
-	// Stat boosters
-	DragonClaw
-	HarpieFeather
-	TitanEye
-	MagicMirror
-	WisemanJournal
-	SirenRose
-	GoddessIcon
-
-	// Held items
-	PhoenixDown
-	BloodEmblem
-	DarkOnesTalisman
-	AegisPendant
-	EarthmotherTotem
-	RabbitFluff
-	OracleCrystal
-	DemonMask
-
-	// Valuables
-	BullionS
-	BullionM
-	BullionL
-)
-
 type Item struct {
 	Id             int
 	Name           string

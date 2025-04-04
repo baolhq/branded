@@ -14,7 +14,7 @@ type Brand struct {
 	Letter       string
 	BonusAc      int
 	Prerequisite Prerequisite
-	WeaponProf   map[WeaponType]WeaponRank // Proficiency according for each weapon type
+	WeaponProf   map[string]string // Proficiency according for each weapon type
 
 	// Maximum attribute
 	MaxStr, MaxDex, MaxCon int
