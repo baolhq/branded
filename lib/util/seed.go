@@ -62,8 +62,8 @@ func SeedData(c *data.Chapter) {
 		Level: 20,
 		Exp:   99,
 		Hp:    99, MaxHp: 99,
-		Str: 99, Dex: 99, Con: 99,
-		Int: 99, Wis: 99, Cha: 99,
+		Str: 9, Dex: 9, Con: 9,
+		Int: 9, Wis: 9, Cha: 9,
 		Brand: data.Brand{
 			Letter: "@",
 			Name:   "Lord",
