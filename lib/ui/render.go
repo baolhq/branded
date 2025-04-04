@@ -1,4 +1,4 @@
-package gen
+package ui
 
 import (
 	"strings"
@@ -41,15 +41,15 @@ func RenderChapter(cX, cY int, c data.Chapter) string {
 
 			if unit := c.GetUnitAt(x, y); unit != nil {
 				style = setFactionStyle(lipgloss.NewStyle(), unit.Faction)
-				char = unit.Symbol
+				char = unit.Brand.Letter
 			} else {
 				style = styles[0] // Default to white
 				tile := c.Map[x][y].Tiles[len(c.Map[x][y].Tiles)-1]
 
 				if tile.Object.Id > 0 {
-					char = tile.Object.Symbol
+					char = tile.Object.Letter
 				} else {
-					char = tile.Terrain.Symbol
+					char = tile.Terrain.Letter
 				}
 			}
 

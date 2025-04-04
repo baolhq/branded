@@ -2,7 +2,6 @@ package core
 
 import (
 	"baolhq/branded/lib/data"
-	"baolhq/branded/lib/gen"
 	"baolhq/branded/lib/meta"
 	"baolhq/branded/lib/ui"
 	"baolhq/branded/lib/util"
@@ -41,7 +40,7 @@ func InitState() Window {
 
 	return Window{
 		Chapter:  chapter,
-		Content:  gen.RenderChapter(cX, cY, chapter),
+		Content:  ui.RenderChapter(cX, cY, chapter),
 		Controls: Controls{CursorX: cX, CursorY: cY},
 	}
 }

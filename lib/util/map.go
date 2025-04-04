@@ -15,7 +15,7 @@ func GetPartyLord(c *data.Chapter) *data.Unit {
 		for y := range c.Map[x] {
 			unit := c.GetUnitAt(x, y)
 			if unit != nil &&
-				unit.Brand.Type == data.Lord &&
+				unit.Brand.Name == "Lord" &&
 				unit.Faction == data.Party {
 				return unit
 			}

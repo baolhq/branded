@@ -28,20 +28,21 @@ const (
 	DemonMask
 
 	// Valuables
-	CursedIdol
-	FiveLeafClover
-	SilkCloth
-	SilverIngot
-	MithrilOre
+	BullionS
+	BullionM
+	BullionL
 )
 
 type Item struct {
-	Id         int
-	Name       string
-	Desc       string
-	Uses       int  // Usage left
-	Price      int  // Base price from shop
-	Consumable bool // Can select `Use` and lost upon use
+	Id             int
+	Name           string
+	Info           string
+	Uses           int  // Usage left
+	Price          int  // Base price from shop
+	IsConsumable   bool // Can select `Use` and lost upon use
+	EffectType     string
+	EffectValue    int
+	EffectDuration int // 0 = Permanent, 1+ = Short-term
 }
 
 func (i *Item) UsageLeft() string {

@@ -12,9 +12,11 @@ const (
 
 type Terrain struct {
 	Id           int
-	Desc         string
-	Symbol       string
+	Name         string
+	Info         string
+	Letter       string
 	MovementCost int
 	Walkable     bool
 	Diggable     bool
+	BonusAc      int
 }

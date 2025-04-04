@@ -9,3 +9,13 @@ func RandInt(min, max int) int {
 func RandFloat(min, max float64) float64 {
 	return min + rand.Float64()*(max-min)
 }
+
+func ClampInt(x, min, max int) int {
+	if x < min {
+		return min
+	}
+	if x > max {
+		return max
+	}
+	return x
+}

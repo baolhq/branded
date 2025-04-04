@@ -17,10 +17,12 @@ const (
 
 type Object struct {
 	Id          int
-	Desc        string
-	Symbol      string
+	Name        string
+	Info        string
+	Letter      string
 	Walkable    bool
 	Destroyable bool
 	IsBuilding  bool // Can be `Visit`
 	IsLocked    bool // Can be `Unlock`
+	BonusAc     int
 }

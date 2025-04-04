@@ -2,7 +2,6 @@ package ui
 
 import (
 	"baolhq/branded/lib/data"
-	"baolhq/branded/lib/gen"
 	"baolhq/branded/lib/meta"
 
 	"github.com/charmbracelet/bubbles/viewport"
@@ -17,7 +16,7 @@ func InitContent(content string) viewport.Model {
 
 // UpdateContent updates the viewport with new game content
 func UpdateContent(vp *viewport.Model, cX, cY int, c data.Chapter) {
-	chapter := gen.RenderChapter(cX, cY, c)
+	chapter := RenderChapter(cX, cY, c)
 	vp.SetContent(chapter)
 }
 

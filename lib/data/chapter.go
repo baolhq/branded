@@ -37,7 +37,7 @@ func LoadMap() [][]TileStack {
 	for x := range m {
 		m[x] = make([]TileStack, meta.MapHeight)
 		for y := range m[x] {
-			m[x][y] = TileStack{Tiles: []Tile{{Terrain: Terrain{Id: Plain, Symbol: "."}}}}
+			m[x][y] = TileStack{Tiles: []Tile{{Terrain: Terrain{Id: Plain, Letter: "."}}}}
 		}
 	}
 	return m

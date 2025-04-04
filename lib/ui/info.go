@@ -106,12 +106,12 @@ func renderInfo(u *data.Unit) string {
 	exp := expStyle.Render(expText)
 	hpBlock := lipgloss.JoinHorizontal(lipgloss.Left, hp, exp)
 
-	str := renderAttribute("STR", u.STR)
-	dex := renderAttribute("DEX", u.DEX)
-	con := renderAttribute("CON", u.CON)
-	intel := renderAttribute("INT", u.INT)
-	wis := renderAttribute("WIS", u.WIS)
-	cha := renderAttribute("STR", u.CHA)
+	str := renderAttribute("STR", u.Str)
+	dex := renderAttribute("DEX", u.Dex)
+	con := renderAttribute("CON", u.Con)
+	intel := renderAttribute("INT", u.Int)
+	wis := renderAttribute("WIS", u.Wis)
+	cha := renderAttribute("STR", u.Cha)
 	leftBlock := lipgloss.JoinVertical(lipgloss.Top, str, dex, con, intel, wis, cha)
 
 	items := renderInventory(u.Items)
