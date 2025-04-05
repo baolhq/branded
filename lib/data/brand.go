@@ -9,10 +9,12 @@ type Prerequisite struct {
 
 // Represents a unit class
 type Brand struct {
+	Id           int
 	Name         string
 	Info         string
 	Letter       string
 	BonusAc      int
+	Movement     int
 	Prerequisite Prerequisite
 	WeaponProf   map[string]string // Proficiency according for each weapon type
 

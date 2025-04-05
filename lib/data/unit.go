@@ -2,14 +2,14 @@ package data
 
 // Unit represent a single unit in game
 type Unit struct {
+	Id            int
+	Brand         Brand
 	Name          string
 	Level         int
 	Hp            int
 	MaxHp         int
 	Exp           int
 	Gender        string
-	Brand         Brand
-	Movement      int
 	BaseAc        int
 	Faction       string         // Initial faction of this unit toward the player's party
 	RecuitBy      []Unit         // <Talk> to recuit this hostile unit

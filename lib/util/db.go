@@ -7,6 +7,8 @@ import (
 	"encoding/gob"
 	"log"
 	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func OpenDB(filename string) (*sql.DB, error) {
@@ -23,239 +25,161 @@ func CloseDB(db *sql.DB) {
 	}
 }
 
-// EncodeData generate .dat files from SQLite database
+// EncodeData generate .dat files from SQLite datasource
 func EncodeData() {
 	db, err := OpenDB(meta.DbPath)
 	CheckErr(err)
 	defer CloseDB(db)
 
-	// Encoding brands
-	file, err := os.Create(meta.BrandPath)
-	CheckErr(err)
-	defer file.Close()
-	brands := GetBrands(db)
-	encoder := gob.NewEncoder(file)
-	err = encoder.Encode(brands)
-	CheckErr(err)
+	type encodeTarget struct {
+		path string
+		data any
+	}
 
-	// Encoding items
-	file, err = os.Create(meta.ItemPath)
-	CheckErr(err)
-	defer file.Close()
 	items := GetItems(db)
-	encoder = gob.NewEncoder(file)
-	err = encoder.Encode(items)
-	CheckErr(err)
+	brands := GetBrands(db)
+	encodeList := []encodeTarget{
+		{meta.BrandPath, brands},
+		{meta.ItemPath, items},
+		{meta.WeaponPath, GetWeapons(db, items)},
+		{meta.TerrainPath, GetTerrains(db)},
+		{meta.ObjectPath, GetObjects(db)},
+		{meta.UnitPath, GetUnits(db, brands)},
+	}
 
-	// Encoding weapons
-	file, err = os.Create(meta.WeaponPath)
+	for _, e := range encodeList {
+		func(path string, data any) {
+			file, err := os.Create(path)
+			CheckErr(err)
+			defer file.Close()
+
+			encoder := gob.NewEncoder(file)
+			err = encoder.Encode(data)
+			CheckErr(err)
+		}(e.path, e.data)
+	}
+}
+
+// decodeFile decodes a .dat file into the provided output variable
+func decodeFile[T any](path string, out *T) {
+	file, err := os.Open(path)
 	CheckErr(err)
 	defer file.Close()
-	weapons := GetWeapons(db, items)
-	encoder = gob.NewEncoder(file)
-	err = encoder.Encode(weapons)
-	CheckErr(err)
 
-	// Encoding terrains
-	file, err = os.Create(meta.TerrainPath)
-	CheckErr(err)
-	defer file.Close()
-	terrains := GetTerrains(db)
-	encoder = gob.NewEncoder(file)
-	err = encoder.Encode(terrains)
-	CheckErr(err)
-
-	// Encoding objects
-	file, err = os.Create(meta.ObjectPath)
-	CheckErr(err)
-	defer file.Close()
-	objects := GetObjects(db)
-	encoder = gob.NewEncoder(file)
-	err = encoder.Encode(objects)
+	decoder := gob.NewDecoder(file)
+	err = decoder.Decode(out)
 	CheckErr(err)
 }
 
-func DecodeBrands() []data.Brand {
-	file, err := os.Open(meta.BrandPath)
+func DecodeBrands() (out []data.Brand)     { decodeFile(meta.BrandPath, &out); return }
+func DecodeItems() (out []data.Item)       { decodeFile(meta.ItemPath, &out); return }
+func DecodeWeapons() (out []data.Weapon)   { decodeFile(meta.WeaponPath, &out); return }
+func DecodeTerrains() (out []data.Terrain) { decodeFile(meta.TerrainPath, &out); return }
+func DecodeObjects() (out []data.Object)   { decodeFile(meta.ObjectPath, &out); return }
+func DecodeUnits() (out []data.Unit)       { decodeFile(meta.UnitPath, &out); return }
+
+// queryRows executes a query and scans the results into a slice of type T
+func queryRows[T any](db *sql.DB, query string, scan func(*sql.Rows) (T, error)) []T {
+	rows, err := db.Query(query)
 	CheckErr(err)
-	defer file.Close()
+	defer rows.Close()
 
-	var brands []data.Brand
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(&brands)
-	CheckErr(err)
+	var result []T
+	for rows.Next() {
+		item, err := scan(rows)
+		CheckErr(err)
+		result = append(result, item)
+	}
 
-	return brands
-}
-
-func DecodeItems() []data.Item {
-	file, err := os.Open(meta.ItemPath)
-	CheckErr(err)
-	defer file.Close()
-
-	var items []data.Item
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(&items)
-	CheckErr(err)
-
-	return items
-}
-
-func DecodeWeapons() []data.Weapon {
-	file, err := os.Open(meta.WeaponPath)
-	CheckErr(err)
-	defer file.Close()
-
-	var weapons []data.Weapon
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(&weapons)
-	CheckErr(err)
-
-	return weapons
-}
-
-func DecodeTerrains() []data.Terrain {
-	file, err := os.Open(meta.TerrainPath)
-	CheckErr(err)
-	defer file.Close()
-
-	var terrains []data.Terrain
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(&terrains)
-	CheckErr(err)
-
-	return terrains
-}
-
-func DecodeObjects() []data.Object {
-	file, err := os.Open(meta.ObjectPath)
-	CheckErr(err)
-	defer file.Close()
-
-	var objects []data.Object
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(&objects)
-	CheckErr(err)
-
-	return objects
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return result
 }
 
 func GetBrands(db *sql.DB) []data.Brand {
-	rows, err := db.Query(`SELECT name, info, letter, bonus_ac,
+	return queryRows(db, `SELECT id, name, info, letter, bonus_ac, movement,
 		max_str, max_dex, max_con, max_int, max_wis, max_cha,
-		bonus_str, bonus_dex, bonus_con, bonus_int, bonus_wis, bonus_cha FROM brands`)
-	CheckErr(err)
-	defer rows.Close()
-
-	var brands []data.Brand
-	for rows.Next() {
-		var b data.Brand
-		err := rows.Scan(&b.Name, &b.Info, &b.Letter, &b.BonusAc,
-			&b.MaxStr, &b.MaxDex, &b.MaxCon, &b.MaxInt, &b.MaxWis, &b.MaxCha,
-			&b.BonusStr, &b.BonusDex, &b.BonusCon, &b.BonusInt, &b.BonusWis, &b.BonusCha)
-		CheckErr(err)
-		brands = append(brands, b)
-	}
-
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return brands
+		bonus_str, bonus_dex, bonus_con, bonus_int, bonus_wis, bonus_cha FROM brands`,
+		func(rows *sql.Rows) (data.Brand, error) {
+			var b data.Brand
+			err := rows.Scan(&b.Id, &b.Name, &b.Info, &b.Letter, &b.BonusAc, &b.Movement,
+				&b.MaxStr, &b.MaxDex, &b.MaxCon, &b.MaxInt, &b.MaxWis, &b.MaxCha,
+				&b.BonusStr, &b.BonusDex, &b.BonusCon, &b.BonusInt, &b.BonusWis, &b.BonusCha)
+			return b, err
+		})
 }
 
 func GetItems(db *sql.DB) []data.Item {
-	rows, err := db.Query(`SELECT id, name, info, uses, price, is_consumable, 
-		effect_type, effect_value, effect_duration FROM items`)
-	CheckErr(err)
-	defer rows.Close()
-
-	var items []data.Item
-	for rows.Next() {
-		var i data.Item
-		err := rows.Scan(&i.Id, &i.Name, &i.Info, &i.Uses, &i.Price, &i.IsConsumable,
-			&i.EffectType, &i.EffectValue, &i.EffectDuration)
-		CheckErr(err)
-		items = append(items, i)
-	}
-
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return items
-}
-
-func GetWeapons(db *sql.DB, items []data.Item) []data.Weapon {
-	rows, err := db.Query(`SELECT item_id, weapon_type, weapon_rank, min_range, max_range,
-		can_one_handed, can_two_handed, to_hit, to_dam, bonus_ac FROM weapons`)
-	CheckErr(err)
-	defer rows.Close()
-
-	var weapons []data.Weapon
-	for rows.Next() {
-		var w data.Weapon
-		var itemId int
-		err := rows.Scan(&itemId, &w.Type, &w.Rank, &w.MinRange, &w.MaxRange,
-			&w.CanOneHanded, &w.CanTwoHanded, &w.ToHit, &w.ToDam, &w.BonusAc)
-		CheckErr(err)
-
-		for _, item := range items {
-			if item.Id == itemId {
-				w.Item = item
-				break
-			}
-		}
-
-		weapons = append(weapons, w)
-	}
-
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return weapons
+	return queryRows(db, `SELECT id, name, info, uses, price, is_consumable, 
+		effect_type, effect_value, effect_duration FROM items`,
+		func(rows *sql.Rows) (data.Item, error) {
+			var i data.Item
+			err := rows.Scan(&i.Id, &i.Name, &i.Info, &i.Uses, &i.Price, &i.IsConsumable,
+				&i.EffectType, &i.EffectValue, &i.EffectDuration)
+			return i, err
+		})
 }
 
 func GetTerrains(db *sql.DB) []data.Terrain {
-	rows, err := db.Query(`SELECT name, info, letter, movement_cost, walkable, diggable, bonus_ac FROM terrains`)
-	CheckErr(err)
-	defer rows.Close()
-
-	var terrains []data.Terrain
-	for rows.Next() {
-		var t data.Terrain
-		err := rows.Scan(&t.Name, &t.Info, &t.Letter, &t.MovementCost, &t.Walkable,
-			&t.Diggable, &t.BonusAc)
-		CheckErr(err)
-		terrains = append(terrains, t)
-	}
-
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return terrains
+	return queryRows(db, `SELECT name, info, letter, movement_cost, walkable, diggable, bonus_ac FROM terrains`,
+		func(rows *sql.Rows) (data.Terrain, error) {
+			var t data.Terrain
+			err := rows.Scan(&t.Name, &t.Info, &t.Letter, &t.MovementCost, &t.Walkable, &t.Diggable, &t.BonusAc)
+			return t, err
+		})
 }
 
 func GetObjects(db *sql.DB) []data.Object {
-	rows, err := db.Query(`SELECT name, info, letter, walkable, destroyable,
-		is_building, is_locked, bonus_ac FROM objects`)
-	CheckErr(err)
-	defer rows.Close()
+	return queryRows(db, `SELECT name, info, letter, walkable, destroyable, is_building, is_locked, bonus_ac FROM objects`,
+		func(rows *sql.Rows) (data.Object, error) {
+			var o data.Object
+			err := rows.Scan(&o.Name, &o.Info, &o.Letter, &o.Walkable, &o.Destroyable, &o.IsBuilding, &o.IsLocked, &o.BonusAc)
+			return o, err
+		})
+}
 
-	var objects []data.Object
-	for rows.Next() {
-		var o data.Object
-		err := rows.Scan(&o.Name, &o.Info, &o.Letter, &o.Walkable, &o.Destroyable,
-			&o.IsBuilding, &o.IsLocked, &o.BonusAc)
-		CheckErr(err)
-		objects = append(objects, o)
+func GetWeapons(db *sql.DB, items []data.Item) []data.Weapon {
+	itemMap := make(map[int]data.Item)
+	for _, i := range items {
+		itemMap[i.Id] = i
 	}
 
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
+	return queryRows(db, `SELECT item_id, weapon_type, weapon_rank, min_range, max_range,
+		can_one_handed, can_two_handed, to_hit, to_dam, bonus_ac FROM weapons`,
+		func(rows *sql.Rows) (data.Weapon, error) {
+			var w data.Weapon
+			var itemId int
+			err := rows.Scan(&itemId, &w.Type, &w.Rank, &w.MinRange, &w.MaxRange,
+				&w.CanOneHanded, &w.CanTwoHanded, &w.ToHit, &w.ToDam, &w.BonusAc)
+			if err != nil {
+				return w, err
+			}
+			w.Item = itemMap[itemId]
+			return w, nil
+		})
+}
+
+func GetUnits(db *sql.DB, brands []data.Brand) []data.Unit {
+	brandMap := make(map[int]data.Brand)
+	for _, b := range brands {
+		brandMap[b.Id] = b
 	}
 
-	return objects
+	return queryRows(db, `SELECT id, brand_id, name, level, max_hp, gender, base_ac,
+		faction, str, dex, con, int, wis, cha, bonus_str, bonus_dex, bonus_con,
+		bonus_int, bonus_wis, bonus_cha FROM units`,
+		func(rows *sql.Rows) (data.Unit, error) {
+			var u data.Unit
+			var brandId int
+			err := rows.Scan(&u.Id, &brandId, &u.Name, &u.Level, &u.MaxHp, &u.Gender, &u.BaseAc, &u.Faction,
+				&u.Str, &u.Dex, &u.Con, &u.Int, &u.Wis, &u.Cha, &u.BonusStr, &u.BonusDex, &u.BonusCon,
+				&u.BonusInt, &u.BonusWis, &u.BonusCha)
+			if err != nil {
+				return u, err
+			}
+			u.Brand = brandMap[brandId]
+			u.Hp = u.MaxHp
+			return u, nil
+		})
 }
